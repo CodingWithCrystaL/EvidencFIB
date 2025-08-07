@@ -1,0 +1,421 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FIB Bodycam Procedures</title>
+    <style>
+        :root {
+            --primary: rgba(16, 42, 66, 0.85);
+            --secondary: rgba(255, 255, 255, 0.1);
+            --text: #f0f0f0;
+            --accent: #3a86ff;
+            --shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+            --border: 1px solid rgba(255, 255, 255, 0.1);
+            --blur: blur(10px);
+            --transition: all 0.3s ease;
+        }
+
+        .dark-mode {
+            --primary: rgba(16, 42, 66, 0.85);
+            --secondary: rgba(255, 255, 255, 0.1);
+            --text: #f0f0f0;
+            --accent: #3a86ff;
+        }
+
+        .light-mode {
+            --primary: rgba(240, 240, 240, 0.85);
+            --secondary: rgba(0, 0, 0, 0.1);
+            --text: #333;
+            --accent: #0066cc;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            cursor: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="%233a86ff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="4"/></svg>'), auto;
+        }
+
+        body {
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            background: url('https://images.unsplash.com/photo-1518770660439-4636190af475?q=80&w=2070&auto=format&fit=crop') no-repeat center center fixed;
+            background-size: cover;
+            color: var(--text);
+            min-height: 100vh;
+            padding: 2rem;
+            transition: var(--transition);
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            font-weight: 600;
+            background: var(--secondary);
+            backdrop-filter: var(--blur);
+            padding: 0.5rem 1.5rem;
+            border-radius: 50px;
+            box-shadow: var(--shadow);
+            border: var(--border);
+        }
+
+        .theme-toggle {
+            background: var(--secondary);
+            border: none;
+            color: var(--text);
+            padding: 0.75rem 1.5rem;
+            border-radius: 50px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            backdrop-filter: var(--blur);
+            box-shadow: var(--shadow);
+            border: var(--border);
+            transition: var(--transition);
+            cursor: pointer;
+        }
+
+        .theme-toggle:hover {
+            background: var(--accent);
+            transform: translateY(-2px);
+        }
+
+        .commands-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .command-card {
+            background: var(--primary);
+            backdrop-filter: var(--blur);
+            border-radius: 15px;
+            padding: 1.5rem;
+            box-shadow: var(--shadow);
+            border: var(--border);
+            transition: var(--transition);
+        }
+
+        .command-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.4);
+        }
+
+        .command-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            color: var(--accent);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .command-title::before {
+            content: "#";
+            color: var(--accent);
+        }
+
+        .command-item {
+            background: var(--secondary);
+            padding: 0.75rem 1rem;
+            border-radius: 8px;
+            margin-bottom: 0.75rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: var(--transition);
+            border: var(--border);
+        }
+
+        .command-item:hover {
+            background: rgba(58, 134, 255, 0.2);
+        }
+
+        .command-text {
+            font-family: 'Consolas', monospace;
+            font-size: 0.9rem;
+        }
+
+        .copy-btn {
+            background: rgba(255, 255, 255, 0.1);
+            border: none;
+            color: var(--text);
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: var(--transition);
+            cursor: pointer;
+        }
+
+        .copy-btn:hover {
+            background: var(--accent);
+            transform: scale(1.1);
+        }
+
+        .copy-btn i {
+            font-size: 0.8rem;
+        }
+
+        footer {
+            text-align: center;
+            margin-top: 3rem;
+            font-size: 0.9rem;
+            opacity: 0.8;
+        }
+
+        .credits {
+            background: var(--secondary);
+            backdrop-filter: var(--blur);
+            display: inline-block;
+            padding: 0.5rem 1.5rem;
+            border-radius: 50px;
+            box-shadow: var(--shadow);
+            border: var(--border);
+        }
+
+        /* Toast notification */
+        .toast {
+            position: fixed;
+            bottom: 2rem;
+            left: 50%;
+            transform: translateX(-50%);
+            background: var(--primary);
+            backdrop-filter: var(--blur);
+            color: var(--text);
+            padding: 1rem 2rem;
+            border-radius: 8px;
+            box-shadow: var(--shadow);
+            border: var(--border);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            z-index: 1000;
+        }
+
+        .toast.show {
+            opacity: 1;
+        }
+
+        @media (max-width: 768px) {
+            .commands-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            h1 {
+                font-size: 1.8rem;
+            }
+        }
+    </style>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>FIB Bodycam Procedures</h1>
+            <button class="theme-toggle" id="themeToggle">
+                <i class="fas fa-moon"></i> Dark Mode
+            </button>
+        </header>
+
+        <div class="commands-grid">
+            <!-- Attaching Bodycam (Uniform) -->
+            <div class="command-card">
+                <h2 class="command-title">Attaching Bodycam (Uniform)</h2>
+                <div class="command-item">
+                    <span class="command-text">/me Takes out bodycam, attaches it to chest, checks its ballistic, water proof</span>
+                    <button class="copy-btn" onclick="copyToClipboard('/me Takes out bodycam, attaches it to chest, checks its ballistic, water proof')">
+                        <i class="fas fa-copy"></i>
+                    </button>
+                </div>
+                <div class="command-item">
+                    <span class="command-text">/me makes sure it is recording and checks for the red light</span>
+                    <button class="copy-btn" onclick="copyToClipboard('/me makes sure it is recording and checks for the red light')">
+                        <i class="fas fa-copy"></i>
+                    </button>
+                </div>
+                <div class="command-item">
+                    <span class="command-text">/do It is recording, is ballistic and water proof</span>
+                    <button class="copy-btn" onclick="copyToClipboard('/do It is recording, is ballistic and water proof')">
+                        <i class="fas fa-copy"></i>
+                    </button>
+                </div>
+                <div class="command-item">
+                    <span class="command-text">/me connects PDA to the nearest cell tower</span>
+                    <button class="copy-btn" onclick="copyToClipboard('/me connects PDA to the nearest cell tower')">
+                        <i class="fas fa-copy"></i>
+                    </button>
+                </div>
+            </div>
+
+            <!-- While Undercover -->
+            <div class="command-card">
+                <h2 class="command-title">While Undercover</h2>
+                <div class="command-item">
+                    <span class="command-text">/me takes out bodycam and attaches it to belt, hides it, checks its ballistic and water proof</span>
+                    <button class="copy-btn" onclick="copyToClipboard('/me takes out bodycam and attaches it to belt, hides it, checks its ballistic and water proof')">
+                        <i class="fas fa-copy"></i>
+                    </button>
+                </div>
+                <div class="command-item">
+                    <span class="command-text">/me makes sure it is recording and checks for the red light</span>
+                    <button class="copy-btn" onclick="copyToClipboard('/me makes sure it is recording and checks for the red light')">
+                        <i class="fas fa-copy"></i>
+                    </button>
+                </div>
+                <div class="command-item">
+                    <span class="command-text">/do It is recording, is ballistic and water proof</span>
+                    <button class="copy-btn" onclick="copyToClipboard('/do It is recording, is ballistic and water proof')">
+                        <i class="fas fa-copy"></i>
+                    </button>
+                </div>
+                <div class="command-item">
+                    <span class="command-text">/me connects PDA to the nearest cell tower</span>
+                    <button class="copy-btn" onclick="copyToClipboard('/me connects PDA to the nearest cell tower')">
+                        <i class="fas fa-copy"></i>
+                    </button>
+                </div>
+                <div class="command-item">
+                    <span class="command-text">/me takes the FIB drone from the trunk and puts it in the backpack</span>
+                    <button class="copy-btn" onclick="copyToClipboard('/me takes the FIB drone from the trunk and puts it in the backpack')">
+                        <i class="fas fa-copy"></i>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Refreshing Bodycam -->
+            <div class="command-card">
+                <h2 class="command-title">Refreshing Bodycam</h2>
+                <div class="command-item">
+                    <span class="command-text">/me refreshing bodycam</span>
+                    <button class="copy-btn" onclick="copyToClipboard('/me refreshing bodycam')">
+                        <i class="fas fa-copy"></i>
+                    </button>
+                </div>
+                <div class="command-item">
+                    <span class="command-text">/do It is recording</span>
+                    <button class="copy-btn" onclick="copyToClipboard('/do It is recording')">
+                        <i class="fas fa-copy"></i>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Saving Bodycam -->
+            <div class="command-card">
+                <h2 class="command-title">Saving Bodycam</h2>
+                <div class="command-item">
+                    <span class="command-text">/me saves bodycam, uploads it to the FIB Cloud and continues recording</span>
+                    <button class="copy-btn" onclick="copyToClipboard('/me saves bodycam, uploads it to the FIB Cloud and continues recording')">
+                        <i class="fas fa-copy"></i>
+                    </button>
+                </div>
+                <div class="command-item">
+                    <span class="command-text">/do It is recording</span>
+                    <button class="copy-btn" onclick="copyToClipboard('/do It is recording')">
+                        <i class="fas fa-copy"></i>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Drone Commands -->
+            <div class="command-card">
+                <h2 class="command-title">Drone Commands</h2>
+                <div class="command-item">
+                    <span class="command-text">/me launches the FIB Drone</span>
+                    <button class="copy-btn" onclick="copyToClipboard('/me launches the FIB Drone')">
+                        <i class="fas fa-copy"></i>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Taking Evidence -->
+            <div class="command-card">
+                <h2 class="command-title">Taking Evidence</h2>
+                <div class="command-item">
+                    <span class="command-text">( When License Plate Not Visible )</span>
+                    <button class="copy-btn" onclick="copyToClipboard('( When License Plate Not Visible )')">
+                        <i class="fas fa-copy"></i>
+                    </button>
+                </div>
+                <div class="command-item">
+                    <span class="command-text">/me feels the edges of the vehicle for VIN and checks for ownership</span>
+                    <button class="copy-btn" onclick="copyToClipboard('/me feels the edges of the vehicle for VIN and checks for ownership')">
+                        <i class="fas fa-copy"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <footer>
+            <div class="credits">Developed by Kaizen En3</div>
+        </footer>
+
+        <div class="toast" id="toast">Copied to clipboard!</div>
+    </div>
+
+    <script>
+        // Theme toggle
+        const themeToggle = document.getElementById('themeToggle');
+        const body = document.body;
+        let darkMode = true;
+
+        themeToggle.addEventListener('click', () => {
+            darkMode = !darkMode;
+            if (darkMode) {
+                body.classList.remove('light-mode');
+                body.classList.add('dark-mode');
+                themeToggle.innerHTML = '<i class="fas fa-moon"></i> Dark Mode';
+            } else {
+                body.classList.remove('dark-mode');
+                body.classList.add('light-mode');
+                themeToggle.innerHTML = '<i class="fas fa-sun"></i> Light Mode';
+            }
+        });
+
+        // Copy to clipboard function
+        function copyToClipboard(text) {
+            navigator.clipboard.writeText(text).then(() => {
+                showToast();
+            });
+        }
+
+        // Toast notification
+        function showToast() {
+            const toast = document.getElementById('toast');
+            toast.classList.add('show');
+            setTimeout(() => {
+                toast.classList.remove('show');
+            }, 2000);
+        }
+
+        // Custom cursor
+        document.addEventListener('DOMContentLoaded', () => {
+            const links = document.querySelectorAll('a, button, .command-item');
+            
+            links.forEach(link => {
+                link.addEventListener('mouseenter', () => {
+                    document.body.style.cursor = 'url("data:image/svg+xml;utf8,<svg xmlns=\'http://www.w3.org/2000/svg\' width=\'24\' height=\'24\' viewBox=\'0 0 24 24\' fill=\'none\' stroke=\'%233a86ff\' stroke-width=\'2\' stroke-linecap=\'round\' stroke-linejoin=\'round\'><path d=\'M15 15l-2 5L9 9l11 4-5 2zm0 0l5 5M7.188 2.239l.777 2.897M5.136 7.965l-2.898-.777M13.95 4.05l-2.122 2.122m-5.657 5.656l-2.12 2.122\'></path></svg>"), pointer';
+                });
+                
+                link.addEventListener('mouseleave', () => {
+                    document.body.style.cursor = 'url("data:image/svg+xml;utf8,<svg xmlns=\'http://www.w3.org/2000/svg\' width=\'24\' height=\'24\' viewBox=\'0 0 24 24\' fill=\'none\' stroke=\'%233a86ff\' stroke-width=\'2\' stroke-linecap=\'round\' stroke-linejoin=\'round\'><circle cx=\'12\' cy=\'12\' r=\'10\'/><circle cx=\'12\' cy=\'12\' r=\'4\'/></svg>"), auto';
+                });
+            });
+        });
+    </script>
+</body>
+</html>
