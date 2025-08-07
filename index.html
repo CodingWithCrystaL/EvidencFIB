@@ -6,28 +6,14 @@
     <title>FIB Bodycam Procedures</title>
     <style>
         :root {
-            --primary: rgba(16, 42, 66, 0.85);
-            --secondary: rgba(255, 255, 255, 0.1);
+            --primary: rgba(16, 22, 36, 0.85);
+            --secondary: rgba(255, 255, 255, 0.08);
             --text: #f0f0f0;
             --accent: #3a86ff;
-            --shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+            --shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
             --border: 1px solid rgba(255, 255, 255, 0.1);
-            --blur: blur(10px);
-            --transition: all 0.3s ease;
-        }
-
-        .dark-mode {
-            --primary: rgba(16, 42, 66, 0.85);
-            --secondary: rgba(255, 255, 255, 0.1);
-            --text: #f0f0f0;
-            --accent: #3a86ff;
-        }
-
-        .light-mode {
-            --primary: rgba(240, 240, 240, 0.85);
-            --secondary: rgba(0, 0, 0, 0.1);
-            --text: #333;
-            --accent: #0066cc;
+            --blur: blur(12px);
+            --transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
         }
 
         * {
@@ -39,12 +25,24 @@
 
         body {
             font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
-            background: url('https://images.unsplash.com/photo-1518770660439-4636190af475?q=80&w=2070&auto=format&fit=crop') no-repeat center center fixed;
+            background: url('https://images.unsplash.com/photo-1504707748692-419802cf939d?q=80&w=2070&auto=format&fit=crop') no-repeat center center fixed;
             background-size: cover;
             color: var(--text);
             min-height: 100vh;
             padding: 2rem;
             transition: var(--transition);
+            overflow-x: hidden;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            z-index: -1;
         }
 
         .container {
@@ -57,6 +55,7 @@
             justify-content: space-between;
             align-items: center;
             margin-bottom: 2rem;
+            animation: fadeInDown 0.8s ease-out;
         }
 
         h1 {
@@ -68,34 +67,14 @@
             border-radius: 50px;
             box-shadow: var(--shadow);
             border: var(--border);
-        }
-
-        .theme-toggle {
-            background: var(--secondary);
-            border: none;
-            color: var(--text);
-            padding: 0.75rem 1.5rem;
-            border-radius: 50px;
-            font-weight: 600;
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-            backdrop-filter: var(--blur);
-            box-shadow: var(--shadow);
-            border: var(--border);
-            transition: var(--transition);
-            cursor: pointer;
-        }
-
-        .theme-toggle:hover {
-            background: var(--accent);
-            transform: translateY(-2px);
+            text-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
         }
 
         .commands-grid {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
             gap: 1.5rem;
+            animation: fadeIn 1s ease-out 0.2s both;
         }
 
         .command-card {
@@ -106,11 +85,14 @@
             box-shadow: var(--shadow);
             border: var(--border);
             transition: var(--transition);
+            transform: translateY(0);
+            opacity: 0.95;
         }
 
         .command-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.4);
+            transform: translateY(-8px) scale(1.02);
+            box-shadow: 0 15px 45px rgba(0, 0, 0, 0.6);
+            opacity: 1;
         }
 
         .command-title {
@@ -121,6 +103,7 @@
             display: flex;
             align-items: center;
             gap: 0.5rem;
+            text-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
         }
 
         .command-title::before {
@@ -133,43 +116,41 @@
             padding: 0.75rem 1rem;
             border-radius: 8px;
             margin-bottom: 0.75rem;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
             transition: var(--transition);
             border: var(--border);
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .command-item::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(58, 134, 255, 0.2), transparent);
+            transition: 0.6s;
         }
 
         .command-item:hover {
-            background: rgba(58, 134, 255, 0.2);
+            background: rgba(58, 134, 255, 0.15);
+            transform: translateX(5px);
+        }
+
+        .command-item:hover::after {
+            left: 100%;
+        }
+
+        .command-item:active {
+            transform: translateX(5px) scale(0.98);
         }
 
         .command-text {
             font-family: 'Consolas', monospace;
             font-size: 0.9rem;
-        }
-
-        .copy-btn {
-            background: rgba(255, 255, 255, 0.1);
-            border: none;
-            color: var(--text);
-            width: 28px;
-            height: 28px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: var(--transition);
-            cursor: pointer;
-        }
-
-        .copy-btn:hover {
-            background: var(--accent);
-            transform: scale(1.1);
-        }
-
-        .copy-btn i {
-            font-size: 0.8rem;
+            user-select: none;
         }
 
         footer {
@@ -177,6 +158,7 @@
             margin-top: 3rem;
             font-size: 0.9rem;
             opacity: 0.8;
+            animation: fadeIn 1s ease-out 0.4s both;
         }
 
         .credits {
@@ -194,7 +176,7 @@
             position: fixed;
             bottom: 2rem;
             left: 50%;
-            transform: translateX(-50%);
+            transform: translateX(-50%) translateY(20px);
             background: var(--primary);
             backdrop-filter: var(--blur);
             color: var(--text);
@@ -203,12 +185,48 @@
             box-shadow: var(--shadow);
             border: var(--border);
             opacity: 0;
-            transition: opacity 0.3s ease;
+            transition: all 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
             z-index: 1000;
+            pointer-events: none;
         }
 
         .toast.show {
             opacity: 1;
+            transform: translateX(-50%) translateY(0);
+        }
+
+        /* Animations */
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes fadeInDown {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Ripple effect */
+        .ripple {
+            position: absolute;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.4);
+            transform: scale(0);
+            animation: ripple 0.6s linear;
+            pointer-events: none;
+        }
+
+        @keyframes ripple {
+            to {
+                transform: scale(4);
+                opacity: 0;
+            }
         }
 
         @media (max-width: 768px) {
@@ -227,135 +245,84 @@
     <div class="container">
         <header>
             <h1>FIB Bodycam Procedures</h1>
-            <button class="theme-toggle" id="themeToggle">
-                <i class="fas fa-moon"></i> Dark Mode
-            </button>
         </header>
 
         <div class="commands-grid">
             <!-- Attaching Bodycam (Uniform) -->
             <div class="command-card">
                 <h2 class="command-title">Attaching Bodycam (Uniform)</h2>
-                <div class="command-item">
+                <div class="command-item" onclick="copyToClipboard('/me Takes out bodycam, attaches it to chest, checks its ballistic, water proof')">
                     <span class="command-text">/me Takes out bodycam, attaches it to chest, checks its ballistic, water proof</span>
-                    <button class="copy-btn" onclick="copyToClipboard('/me Takes out bodycam, attaches it to chest, checks its ballistic, water proof')">
-                        <i class="fas fa-copy"></i>
-                    </button>
                 </div>
-                <div class="command-item">
+                <div class="command-item" onclick="copyToClipboard('/me makes sure it is recording and checks for the red light')">
                     <span class="command-text">/me makes sure it is recording and checks for the red light</span>
-                    <button class="copy-btn" onclick="copyToClipboard('/me makes sure it is recording and checks for the red light')">
-                        <i class="fas fa-copy"></i>
-                    </button>
                 </div>
-                <div class="command-item">
+                <div class="command-item" onclick="copyToClipboard('/do It is recording, is ballistic and water proof')">
                     <span class="command-text">/do It is recording, is ballistic and water proof</span>
-                    <button class="copy-btn" onclick="copyToClipboard('/do It is recording, is ballistic and water proof')">
-                        <i class="fas fa-copy"></i>
-                    </button>
                 </div>
-                <div class="command-item">
+                <div class="command-item" onclick="copyToClipboard('/me connects PDA to the nearest cell tower')">
                     <span class="command-text">/me connects PDA to the nearest cell tower</span>
-                    <button class="copy-btn" onclick="copyToClipboard('/me connects PDA to the nearest cell tower')">
-                        <i class="fas fa-copy"></i>
-                    </button>
                 </div>
             </div>
 
             <!-- While Undercover -->
             <div class="command-card">
                 <h2 class="command-title">While Undercover</h2>
-                <div class="command-item">
+                <div class="command-item" onclick="copyToClipboard('/me takes out bodycam and attaches it to belt, hides it, checks its ballistic and water proof')">
                     <span class="command-text">/me takes out bodycam and attaches it to belt, hides it, checks its ballistic and water proof</span>
-                    <button class="copy-btn" onclick="copyToClipboard('/me takes out bodycam and attaches it to belt, hides it, checks its ballistic and water proof')">
-                        <i class="fas fa-copy"></i>
-                    </button>
                 </div>
-                <div class="command-item">
+                <div class="command-item" onclick="copyToClipboard('/me makes sure it is recording and checks for the red light')">
                     <span class="command-text">/me makes sure it is recording and checks for the red light</span>
-                    <button class="copy-btn" onclick="copyToClipboard('/me makes sure it is recording and checks for the red light')">
-                        <i class="fas fa-copy"></i>
-                    </button>
                 </div>
-                <div class="command-item">
+                <div class="command-item" onclick="copyToClipboard('/do It is recording, is ballistic and water proof')">
                     <span class="command-text">/do It is recording, is ballistic and water proof</span>
-                    <button class="copy-btn" onclick="copyToClipboard('/do It is recording, is ballistic and water proof')">
-                        <i class="fas fa-copy"></i>
-                    </button>
                 </div>
-                <div class="command-item">
+                <div class="command-item" onclick="copyToClipboard('/me connects PDA to the nearest cell tower')">
                     <span class="command-text">/me connects PDA to the nearest cell tower</span>
-                    <button class="copy-btn" onclick="copyToClipboard('/me connects PDA to the nearest cell tower')">
-                        <i class="fas fa-copy"></i>
-                    </button>
                 </div>
-                <div class="command-item">
+                <div class="command-item" onclick="copyToClipboard('/me takes the FIB drone from the trunk and puts it in the backpack')">
                     <span class="command-text">/me takes the FIB drone from the trunk and puts it in the backpack</span>
-                    <button class="copy-btn" onclick="copyToClipboard('/me takes the FIB drone from the trunk and puts it in the backpack')">
-                        <i class="fas fa-copy"></i>
-                    </button>
                 </div>
             </div>
 
             <!-- Refreshing Bodycam -->
             <div class="command-card">
                 <h2 class="command-title">Refreshing Bodycam</h2>
-                <div class="command-item">
+                <div class="command-item" onclick="copyToClipboard('/me refreshing bodycam')">
                     <span class="command-text">/me refreshing bodycam</span>
-                    <button class="copy-btn" onclick="copyToClipboard('/me refreshing bodycam')">
-                        <i class="fas fa-copy"></i>
-                    </button>
                 </div>
-                <div class="command-item">
+                <div class="command-item" onclick="copyToClipboard('/do It is recording')">
                     <span class="command-text">/do It is recording</span>
-                    <button class="copy-btn" onclick="copyToClipboard('/do It is recording')">
-                        <i class="fas fa-copy"></i>
-                    </button>
                 </div>
             </div>
 
             <!-- Saving Bodycam -->
             <div class="command-card">
                 <h2 class="command-title">Saving Bodycam</h2>
-                <div class="command-item">
+                <div class="command-item" onclick="copyToClipboard('/me saves bodycam, uploads it to the FIB Cloud and continues recording')">
                     <span class="command-text">/me saves bodycam, uploads it to the FIB Cloud and continues recording</span>
-                    <button class="copy-btn" onclick="copyToClipboard('/me saves bodycam, uploads it to the FIB Cloud and continues recording')">
-                        <i class="fas fa-copy"></i>
-                    </button>
                 </div>
-                <div class="command-item">
+                <div class="command-item" onclick="copyToClipboard('/do It is recording')">
                     <span class="command-text">/do It is recording</span>
-                    <button class="copy-btn" onclick="copyToClipboard('/do It is recording')">
-                        <i class="fas fa-copy"></i>
-                    </button>
                 </div>
             </div>
 
             <!-- Drone Commands -->
             <div class="command-card">
                 <h2 class="command-title">Drone Commands</h2>
-                <div class="command-item">
+                <div class="command-item" onclick="copyToClipboard('/me launches the FIB Drone')">
                     <span class="command-text">/me launches the FIB Drone</span>
-                    <button class="copy-btn" onclick="copyToClipboard('/me launches the FIB Drone')">
-                        <i class="fas fa-copy"></i>
-                    </button>
                 </div>
             </div>
 
             <!-- Taking Evidence -->
             <div class="command-card">
                 <h2 class="command-title">Taking Evidence</h2>
-                <div class="command-item">
+                <div class="command-item" onclick="copyToClipboard('( When License Plate Not Visible )')">
                     <span class="command-text">( When License Plate Not Visible )</span>
-                    <button class="copy-btn" onclick="copyToClipboard('( When License Plate Not Visible )')">
-                        <i class="fas fa-copy"></i>
-                    </button>
                 </div>
-                <div class="command-item">
+                <div class="command-item" onclick="copyToClipboard('/me feels the edges of the vehicle for VIN and checks for ownership')">
                     <span class="command-text">/me feels the edges of the vehicle for VIN and checks for ownership</span>
-                    <button class="copy-btn" onclick="copyToClipboard('/me feels the edges of the vehicle for VIN and checks for ownership')">
-                        <i class="fas fa-copy"></i>
-                    </button>
                 </div>
             </div>
         </div>
@@ -368,26 +335,30 @@
     </div>
 
     <script>
-        // Theme toggle
-        const themeToggle = document.getElementById('themeToggle');
-        const body = document.body;
-        let darkMode = true;
-
-        themeToggle.addEventListener('click', () => {
-            darkMode = !darkMode;
-            if (darkMode) {
-                body.classList.remove('light-mode');
-                body.classList.add('dark-mode');
-                themeToggle.innerHTML = '<i class="fas fa-moon"></i> Dark Mode';
-            } else {
-                body.classList.remove('dark-mode');
-                body.classList.add('light-mode');
-                themeToggle.innerHTML = '<i class="fas fa-sun"></i> Light Mode';
-            }
-        });
-
-        // Copy to clipboard function
+        // Copy to clipboard function with ripple effect
         function copyToClipboard(text) {
+            // Create ripple element
+            const ripple = document.createElement('span');
+            ripple.classList.add('ripple');
+            
+            // Get click position
+            const rect = event.currentTarget.getBoundingClientRect();
+            const x = event.clientX - rect.left;
+            const y = event.clientY - rect.top;
+            
+            // Position the ripple
+            ripple.style.left = `${x}px`;
+            ripple.style.top = `${y}px`;
+            
+            // Add ripple to the clicked element
+            event.currentTarget.appendChild(ripple);
+            
+            // Remove ripple after animation
+            setTimeout(() => {
+                ripple.remove();
+            }, 600);
+            
+            // Copy text to clipboard
             navigator.clipboard.writeText(text).then(() => {
                 showToast();
             });
@@ -402,16 +373,16 @@
             }, 2000);
         }
 
-        // Custom cursor
+        // Custom cursor for clickable elements
         document.addEventListener('DOMContentLoaded', () => {
-            const links = document.querySelectorAll('a, button, .command-item');
+            const clickables = document.querySelectorAll('.command-item');
             
-            links.forEach(link => {
-                link.addEventListener('mouseenter', () => {
+            clickables.forEach(item => {
+                item.addEventListener('mouseenter', () => {
                     document.body.style.cursor = 'url("data:image/svg+xml;utf8,<svg xmlns=\'http://www.w3.org/2000/svg\' width=\'24\' height=\'24\' viewBox=\'0 0 24 24\' fill=\'none\' stroke=\'%233a86ff\' stroke-width=\'2\' stroke-linecap=\'round\' stroke-linejoin=\'round\'><path d=\'M15 15l-2 5L9 9l11 4-5 2zm0 0l5 5M7.188 2.239l.777 2.897M5.136 7.965l-2.898-.777M13.95 4.05l-2.122 2.122m-5.657 5.656l-2.12 2.122\'></path></svg>"), pointer';
                 });
                 
-                link.addEventListener('mouseleave', () => {
+                item.addEventListener('mouseleave', () => {
                     document.body.style.cursor = 'url("data:image/svg+xml;utf8,<svg xmlns=\'http://www.w3.org/2000/svg\' width=\'24\' height=\'24\' viewBox=\'0 0 24 24\' fill=\'none\' stroke=\'%233a86ff\' stroke-width=\'2\' stroke-linecap=\'round\' stroke-linejoin=\'round\'><circle cx=\'12\' cy=\'12\' r=\'10\'/><circle cx=\'12\' cy=\'12\' r=\'4\'/></svg>"), auto';
                 });
             });
